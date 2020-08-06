@@ -1,3 +1,4 @@
+//set up Two screen space
 const el = document.getElementById("main"),
     two = new Two({
         fullscreen: true
@@ -10,9 +11,9 @@ const onsite_data = [4.65,4.29,4.43,4.53,4.75,5.21,5.04,4.77,4.66,4.48,9.33,
   9.52,9.60,9.64,9.60,9.45,9.51,10.08,10.22,10.48,10.57,10.45,10.62,10.84,11.29,
   11.44,11.31,11.29,11.39,11.69,11.67,11.66,
   11.58,11.75,11.40,10.71,9.91,9.31,8.49,7.71,6.67,5.75,5.27,5.13,5.47,5.92,6.53]
-let reference_data = onsite_data.map(x => x+Math.random() * 2);
+let reference_data = onsite_data.map(x => x*0.9+(Math.random()-0.5)*2+0.3);
 
-const styles = {family: 'arial, sans-serif', size: 12, leading: 0, weight: 900, align: 'left'};
+const styles = {family: 'arial, sans-serif', size: 18, leading: 0, weight: 900, align: 'left'};
 
 //math constants
 const max_wind = 25;
@@ -54,7 +55,7 @@ const y2s = onsite_data.map(x => origin_y_2-len_y_2*x/max_wind)
 const x3s = reference_data.map(x => origin_x_3+len_x_3*(x/max_wind))
 const y3s = onsite_data.map(x => origin_y_3-len_y_3*x/max_wind)
 
-//create series of correlation values
+//create series of OLS correlation values
 let slopes = [1,1];
 let intercepts = [0,0];
 let r_squares = [0,0];
@@ -82,7 +83,7 @@ for (i=2; i<onsite_data.length; i++) {
     y4s.push(origin_y_3-len_y_3*intercepts[i]/max_wind);
   }
   if (slopes[i]*max_wind+intercepts[i]>max_wind) {
-    x5s.push(origin_x_3+len_x_3*(max_wind-intercepts[i])/slopes[i])/max_wind;
+    x5s.push(origin_x_3+len_x_3*((max_wind-intercepts[i])/slopes[i])/max_wind);
     y5s.push(origin_y_3-len_y_3);
   }
   else {
@@ -100,16 +101,16 @@ const pixel_ms_convert = len_x_3/max_wind; //pixels per m/s
 //draw axes
 var x_axis_1 = two.makeLine(origin_x_1, origin_y_1, origin_x_1+len_x_1, origin_y_1);
 var y_axis_1 = two.makeLine(origin_x_1, origin_y_1-len_y_1, origin_x_1, origin_y_1);
-var graph_label_1 = two.makeText("On-site Anemometer", origin_x_1-100, origin_y_1-len_y_1/2, styles);
+var graph_label_1 = two.makeText("On-site", origin_x_1-100, origin_y_1-len_y_1/2, styles);
 
 var x_axis_2 = two.makeLine(origin_x_2, origin_y_2, origin_x_2+len_x_2, origin_y_2);
 var y_axis_2 = two.makeLine(origin_x_2, origin_y_2-len_y_2, origin_x_2, origin_y_2);
-var graph_label_2 = two.makeText("Reference Anemometer", origin_x_2-100, origin_y_2-len_y_2/2, styles);
+var graph_label_2 = two.makeText("Reference", origin_x_2-100, origin_y_2-len_y_2/2, styles);
 
 var x_axis_3 = two.makeLine(origin_x_3, origin_y_3, origin_x_3+len_x_3, origin_y_3);
 var y_axis_3 = two.makeLine(origin_x_3, origin_y_3-len_y_3, origin_x_3, origin_y_3);
-var x_axis_label_3 = two.makeText("Reference Anemometer", 550, 950, styles);
-var y_axis_label_3 = two.makeText("On-site Anemometer", 250, 650, styles);
+var x_axis_label_3 = two.makeText("Reference", 550, 925, styles);
+var y_axis_label_3 = two.makeText("On-site", 275, 650, styles);
 y_axis_label_3.rotation = Math.PI*-0.5;
 
 //draw trace lines (starting position on axes)
@@ -162,5 +163,3 @@ two.bind('update', function(frameCount) {
   }
 
 }).play();
-
-//two.update();
